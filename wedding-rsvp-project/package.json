@@ -36,6 +36,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "build": "npm run typecheck && npm run test && vite build",
+    "build:supabase": "VITE_BASE_PATH=/functions/v1/app/ npm run build",
+    "deploy:supabase": "npm run build:supabase && supabase --experimental storage cp -r dist ss:///wedding-rsvp --linked && supabase functions deploy app --no-verify-jwt --use-api",
     "preview": "vite preview"
   }
 }

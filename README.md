@@ -47,10 +47,17 @@ wedding-rsvp-project/supabase/migrations/20260520093600_create_guests.sql
 
 ## Deploy
 
-GitHub Pages deployment is configured in:
+GitHub Pages is disabled. Deployments are served only from Supabase.
 
-```text
-wedding-rsvp-project/.github/workflows/deploy.yml
+```bash
+cd wedding-rsvp-project
+npm run deploy:supabase
 ```
 
-Pushing to `main` builds the app and deploys `wedding-rsvp-project/dist`.
+The script builds the Vite app, uploads `dist` to the public Supabase Storage bucket, and deploys the public Edge Function proxy.
+
+Public app URL:
+
+```text
+https://bugwiklegzeduufvognl.supabase.co/functions/v1/app
+```
