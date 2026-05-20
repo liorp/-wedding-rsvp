@@ -1,5 +1,6 @@
 import { ArrowRight, LockKeyhole, Plus } from "lucide-react";
-import { useMemo, useState } from "react";
+import type { User } from "@supabase/supabase-js";
+import { useEffect, useMemo, useState } from "react";
 import { ActionLinks } from "@/components/ActionLinks";
 import { AdminDashboard } from "@/components/AdminDashboard";
 import { AdminGate } from "@/components/AdminGate";
@@ -19,14 +20,37 @@ export default function App() {
   const [config, setConfig] = useState<AppConfig>(loadSettings);
   const [view, setView] = useState<View>("rsvp");
   const [submittedGuest, setSubmittedGuest] = useState<Guest | null>(null);
-  const [adminUnlocked, setAdminUnlocked] = useState(false);
+  const [adminUser, setAdminUser] = useState<User | null>(null);
   const countdown = useCountdown(config.weddingDate);
   const weddingDate = new Date(config.weddingDate);
   const supabase = useMemo(() => createWeddingSupabase(config), [config]);
 
+  useEffect(() => {
+    if (!supabase) {
+      setAdminUser(null);
+      return;
+    }
+
+    void supabase.auth.getSession().then(({ data }) => {
+      setAdminUser(data.session?.user ?? null);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setAdminUser(session?.user ?? null);
+    });
+
+    return () => listener.subscription.unsubscribe();
+  }, [supabase]);
+
   function handleSettingsSave(nextConfig: AppConfig) {
     saveSettings(nextConfig);
     setConfig(nextConfig);
+  }
+
+  async function handleSignOut() {
+    if (supabase) await supabase.auth.signOut();
+    setAdminUser(null);
+    setView("rsvp");
   }
 
   const screenTitle =
@@ -70,18 +94,18 @@ export default function App() {
 
             {view === "success" && submittedGuest ? <SuccessScreen guest={submittedGuest} config={config} /> : null}
 
-            {view === "admin-gate" && !adminUnlocked ? (
+            {view === "admin-gate" && !adminUser ? (
               <AdminGate
-                config={config}
-                onEnter={() => {
-                  setAdminUnlocked(true);
+                supabase={supabase}
+                onEnter={(user) => {
+                  setAdminUser(user);
                   setView("admin");
                 }}
               />
             ) : null}
 
-            {view === "admin" && adminUnlocked ? (
-              <AdminDashboard config={config} supabase={supabase} onSettingsSave={handleSettingsSave} />
+            {view === "admin" && adminUser ? (
+              <AdminDashboard config={config} supabase={supabase} onSettingsSave={handleSettingsSave} onSignOut={() => void handleSignOut()} />
             ) : null}
           </CardContent>
         </Card>
@@ -103,7 +127,7 @@ export default function App() {
             variant="ghost"
             size="sm"
             onClick={() => {
-              if (adminUnlocked) setView(view === "admin" ? "rsvp" : "admin");
+              if (adminUser) setView(view === "admin" ? "rsvp" : "admin");
               else setView("admin-gate");
             }}
           >

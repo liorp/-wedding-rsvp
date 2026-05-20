@@ -15,7 +15,6 @@ export type AppConfig = {
   wazeLink: string;
   bitPhone: string;
   payboxPhone: string;
-  adminPassword: string;
   supabaseUrl: string;
   supabaseAnonKey: string;
   whatsappOpening: string;

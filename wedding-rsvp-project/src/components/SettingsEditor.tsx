@@ -13,7 +13,7 @@ type SettingsEditorProps = {
 
 type EditableKey = keyof Pick<
   AppConfig,
-  "coupleNames" | "weddingDate" | "venueName" | "venueAddress" | "wazeLink" | "bitPhone" | "payboxPhone" | "adminPassword" | "whatsappOpening" | "whatsappClosing"
+  "coupleNames" | "weddingDate" | "venueName" | "venueAddress" | "wazeLink" | "bitPhone" | "payboxPhone" | "whatsappOpening" | "whatsappClosing"
 >;
 
 const fields: Array<{ key: EditableKey; label: string; placeholder?: string; type?: string }> = [
@@ -23,7 +23,6 @@ const fields: Array<{ key: EditableKey; label: string; placeholder?: string; typ
   { key: "wazeLink", label: "קישור Waze", placeholder: "https://waze.com/ul?..." },
   { key: "bitPhone", label: "מספר טלפון לביט", placeholder: "050-0000000" },
   { key: "payboxPhone", label: "מספר טלפון לPayBox", placeholder: "050-0000000" },
-  { key: "adminPassword", label: "סיסמת אדמין", type: "password" },
   { key: "whatsappOpening", label: "פתיחת הודעת WhatsApp" },
   { key: "whatsappClosing", label: "סיום הודעת WhatsApp" },
 ];

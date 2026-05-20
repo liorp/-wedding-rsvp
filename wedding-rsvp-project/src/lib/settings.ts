@@ -10,7 +10,6 @@ export function loadSettings(): AppConfig {
       ...saved,
       supabaseUrl: DEFAULT_CONFIG.supabaseUrl,
       supabaseAnonKey: DEFAULT_CONFIG.supabaseAnonKey,
-      adminPassword: saved.adminPassword || DEFAULT_CONFIG.adminPassword,
     };
   } catch {
     return { ...DEFAULT_CONFIG };

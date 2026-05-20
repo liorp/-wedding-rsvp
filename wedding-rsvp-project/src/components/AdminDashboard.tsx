@@ -1,4 +1,4 @@
-import { Download, MessageCircle, RefreshCw, Settings, Trash2, Users } from "lucide-react";
+import { Download, LogOut, MessageCircle, RefreshCw, Settings, Trash2, Users } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SettingsEditor } from "@/components/SettingsEditor";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,7 @@ type AdminDashboardProps = {
   config: AppConfig;
   supabase: WeddingSupabaseClient | null;
   onSettingsSave: (config: AppConfig) => void;
+  onSignOut: () => void;
 };
 
 function Stat({ label, value }: { label: string; value: number }) {
@@ -28,7 +29,7 @@ function Stat({ label, value }: { label: string; value: number }) {
   );
 }
 
-export function AdminDashboard({ config, supabase, onSettingsSave }: AdminDashboardProps) {
+export function AdminDashboard({ config, supabase, onSettingsSave, onSignOut }: AdminDashboardProps) {
   const [guests, setGuests] = useState<Guest[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
@@ -112,6 +113,10 @@ export function AdminDashboard({ config, supabase, onSettingsSave }: AdminDashbo
           <Button variant="secondary" size="sm" onClick={sendToAll}>
             <MessageCircle className="h-4 w-4" />
             שלח לכולם
+          </Button>
+          <Button variant="ghost" size="sm" onClick={onSignOut}>
+            <LogOut className="h-4 w-4" />
+            התנתק
           </Button>
         </div>
 

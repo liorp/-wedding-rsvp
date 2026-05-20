@@ -10,7 +10,6 @@ const config: AppConfig = {
   wazeLink: "https://waze.com/example",
   bitPhone: "050-111-2222",
   payboxPhone: "050-333-4444",
-  adminPassword: "secret",
   supabaseUrl: "https://example.supabase.co",
   supabaseAnonKey: "anon",
   whatsappOpening: "פתיחה",
