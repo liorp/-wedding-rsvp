@@ -14,6 +14,39 @@ const contentTypes: Record<string, string> = {
   ".ico": "image/x-icon",
 };
 
+async function inlineIndexHtml(origin: string) {
+  const htmlResponse = await fetchObject(origin, "/index.html");
+  if (!htmlResponse.ok) return htmlResponse;
+
+  let html = await htmlResponse.text();
+  const scriptMatch = html.match(/<script type="module" crossorigin src="\.\/assets\/([^"]+)"><\/script>/);
+  const styleMatch = html.match(/<link rel="stylesheet" href="\.\/assets\/([^"]+)">/);
+
+  if (styleMatch?.[1]) {
+    const cssResponse = await fetchObject(origin, `/assets/${styleMatch[1]}`);
+    if (cssResponse.ok) {
+      const css = await cssResponse.text();
+      html = html.replace(styleMatch[0], () => `<style>${css}</style>`);
+    }
+  }
+
+  if (scriptMatch?.[1]) {
+    const jsResponse = await fetchObject(origin, `/assets/${scriptMatch[1]}`);
+    if (jsResponse.ok) {
+      const js = await jsResponse.text();
+      html = html.replace(scriptMatch[0], () => `<script type="module">${js}</script>`);
+    }
+  }
+
+  return new Response(html, {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "no-cache",
+      "access-control-allow-origin": "*",
+    },
+  });
+}
+
 function extension(pathname: string) {
   const match = pathname.match(/\.[a-z0-9]+$/i);
   return match?.[0].toLowerCase() || ".html";
@@ -35,6 +68,8 @@ async function fetchObject(origin: string, pathname: string) {
 Deno.serve(async (request) => {
   const url = new URL(request.url);
   const pathname = normalizePath(url);
+  if (pathname === "/index.html") return inlineIndexHtml(url.origin);
+
   const response = await fetchObject(url.origin, pathname);
   const fileResponse = response.ok ? response : await fetchObject(url.origin, "/index.html");
   const headers = new Headers();
