@@ -1,144 +1,56 @@
-# 💍 Wedding RSVP App
+# Wedding RSVP
 
-אפליקציית RSVP מודרנית לחתונה — בעברית מלאה עם RTL, חיבור Supabase, ולוח ניהול מתקדם.
+Hebrew RTL wedding RSVP app built with Vite, React, TypeScript, Tailwind, shadcn-style components, and Supabase.
 
----
-
-## 🌟 פיצ'רים
-
-### 🎊 דף האורחים
-
-| פיצ'ר | תיאור |
-|--------|--------|
-| ⏱ **ספירה לאחור** | טיימר חי לתאריך החתונה |
-| 📋 **טופס RSVP** | שם מלא, טלפון, אישור הגעה, מספר אורחים |
-| 📅 **הוסף ליומן** | קישור ישיר ל-Google Calendar עם פרטי האירוע |
-| 🧭 **נווט ב-Waze** | פתיחת Waze ישירות לכתובת האולם |
-| 💳 **שלח מתנה בביט** | כפתור לתשלום מתנה כספית דרך Bit |
-| 📦 **שלח מתנה בPayBox** | כפתור לתשלום מתנה כספית דרך PayBox |
-
-### 🔐 לוח ניהול (אדמין)
-
-| פיצ'ר | תיאור |
-|--------|--------|
-| 📊 **סטטיסטיקות** | סה"כ רישומים, מגיעים, לא מגיעים, סה"כ אורחים |
-| 📈 **פס התקדמות** | אחוז המגיעים בזמן אמת |
-| 👥 **רשימת אורחים** | טבלה מלאה עם כל הפרטים |
-| 📥 **ייצוא Excel** | 3 קבצים נפרדים: כולם / מגיעים / לא מגיעים |
-| 📲 **תזכורת WhatsApp** | שליחת הודעה אישית לכל אורח ביום החתונה |
-| ⚙️ **הגדרות עריכה** | שינוי כל פרטי האירוע מהדאשבורד |
-| 🗑️ **ניקוי מטמון** | איפוס localStorage וטעינה מחדש מ-Supabase |
-
-### ⚙️ הגדרות עריכה מהדאשבורד
-
-ניתן לשנות את כל הפרטים הבאים בלי לגעת בקוד:
-
-| שדה | תיאור |
-|-----|--------|
-| 💑 שמות החתן והכלה | שמות שמופיעים בכותרת |
-| 📅 תאריך ושעה | תאריך ושעת האירוע |
-| 🏛 שם האולם וכתובת | מופיע בטופס ובתזכורות |
-| 🧭 קישור Waze | ניווט ישיר לאולם |
-| 💳 מספר טלפון לביט | לתשלום מתנה בBit |
-| 📦 מספר טלפון לPayBox | לתשלום מתנה בPayBox |
-| 🔐 סיסמת אדמין | סיסמה לכניסה לדאשבורד |
-| ☁️ פרטי Supabase | URL ו-Anon Key |
-
----
-
-## 🛠 טכנולוגיות
-
-| טכנולוגיה | תפקיד |
-|---|---|
-| React 18 | ממשק משתמש |
-| Vite 4 | בנייה ופיתוח |
-| Supabase | מסד נתונים בענן |
-| Vercel | פריסה ו-hosting |
-| localStorage | גיבוי מקומי למקרה של תקלה |
-
----
-
-## 🚀 התקנה מקומית
+## Local Development
 
 ```bash
-git clone https://github.com/amirnagat/-wedding-rsvp.git
-cd -wedding-rsvp/wedding-rsvp-project
+cd wedding-rsvp-project
 npm install
 npm run dev
 ```
 
----
+Local environment values live in `wedding-rsvp-project/.env.local` and are ignored by git. Copy `.env.example` when setting up another machine.
 
-## 🗄 הגדרת Supabase
+## Configuration
 
-### 1. צור פרויקט ב-[supabase.com](https://supabase.com)
+Default event configuration is centralized in:
 
-### 2. הרץ את ה-SQL הבא ב-SQL Editor:
-
-```sql
-create table guests (
-  id uuid default gen_random_uuid() primary key,
-  full_name text not null,
-  phone text,
-  attending boolean not null default true,
-  guest_count integer not null default 1,
-  created_at timestamp with time zone default now()
-);
-
-alter table guests enable row level security;
-
-create policy "Allow insert" on guests
-  for insert to anon with check (true);
-
-create policy "Allow select" on guests
-  for select to anon using (true);
+```text
+wedding-rsvp-project/src/config.ts
 ```
 
-### 3. העתק את פרטי ה-API מ-Settings → API Keys והכנס אותם בהגדרות האדמין
+It includes couple names, wedding date, venue, Waze, payment phone numbers, WhatsApp message text, admin password, and Supabase env bindings.
 
----
+Runtime editable event values are stored in `localStorage`; Supabase URL and key are build-time env values:
 
-## 🔐 כניסה לדאשבורד
-
-לחץ על **🔐 ניהול** בתחתית האפליקציה והזן את הסיסמה.
-
-סיסמת ברירת מחדל: `admin123` — מומלץ לשנות מהגדרות האירוע!
-
----
-
-## 📲 WhatsApp תזכורת
-
-ביום החתונה, כנס לדאשבורד ← לחץ **📲 שלח לכולם**.
-
-האפליקציה תשלח הודעת תזכורת אישית לכל אורח שהזין מספר טלפון:
-
-```
-✨ הגיע הרגע! ✨
-
-[שם האורח] היקר/ה,
-הגיע היום המיוחד — היום מתחתנים [שמות הזוג]! 💍🎊
-
-📍 [שם האולם]
-🏠 [כתובת]
-⏰ קבלת פנים בשעה [שעה]
-
-נסעו בזהירות ונתראה בשמחות! 🥂💕
+```bash
+VITE_SUPABASE_URL=https://bugwiklegzeduufvognl.supabase.co
+VITE_SUPABASE_ANON_KEY=...
+VITE_ADMIN_PASSWORD=...
 ```
 
----
+## Supabase
 
-## 💳 תשלום מתנה
+The remote Supabase project is linked through the CLI:
 
-האפליקציה תומכת בשני אמצעי תשלום:
+```bash
+cd wedding-rsvp-project
+supabase db push
+```
 
-**Bit** — הזן מספר טלפון המקושר לחשבון Bit שלך בהגדרות האדמין.
+The guests schema and RLS policies are in:
 
-**PayBox** — הזן מספר טלפון המקושר לחשבון PayBox שלך בהגדרות האדמין.
+```text
+wedding-rsvp-project/supabase/migrations/20260520093600_create_guests.sql
+```
 
-הכפתורים יופיעו אוטומטית לאורחים לאחר אישור ההגעה.
+## Deploy
 
----
+GitHub Pages deployment is configured in:
 
-## 📄 רישיון
+```text
+wedding-rsvp-project/.github/workflows/deploy.yml
+```
 
-MIT — שימוש חופשי לכל מטרה 🎉
+Pushing to `main` builds the app and deploys `wedding-rsvp-project/dist`.
